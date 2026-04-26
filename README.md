@@ -1,15 +1,6 @@
 # mern-utils
 
-A lightweight utility library for MERN stack applications, providing commonly used helpers for API integration, state management, and data validation.
-
-## Features
-
-- RESTful API client with built-in error handling
-- Form validation utilities with customizable rules
-- JWT authentication helpers
-- Data transformation and formatting functions
-- Request/response interceptors
-- LocalStorage manager with encryption support
+A collection of reusable utilities and helpers for MERN stack development, including API client wrappers, form validation, authentication helpers, and common middleware.
 
 ## Installation
 
@@ -17,34 +8,47 @@ A lightweight utility library for MERN stack applications, providing commonly us
 npm install mern-utils
 ```
 
-## Quick Start
+## Setup
 
 ```javascript
-import { apiClient, validateEmail, formatDate } from 'mern-utils';
+// Initialize in your Express app
+const { setupAuth, errorHandler } = require('mern-utils');
 
-// Make authenticated API requests
-const { data } = await apiClient.get('/api/users', {
-  headers: { Authorization: `Bearer ${token}` }
+app.use(setupAuth(process.env.JWT_SECRET));
+app.use(errorHandler());
+```
+
+## Usage
+
+**API Client with Request/Response Interceptors:**
+```javascript
+import { createApiClient } from 'mern-utils';
+
+const api = createApiClient({
+  baseURL: 'http://localhost:5000/api',
+  token: localStorage.getItem('token')
 });
 
-// Validate user input
-const isValid = validateEmail('user@example.com');
-
-// Format timestamps
-const formatted = formatDate(new Date(), 'MM/DD/YYYY');
+const response = await api.get('/users');
 ```
 
-## Configuration
-
-Create a `mern-utils.config.js` in your project root:
-
+**Form Validation:**
 ```javascript
-module.exports = {
-  apiBaseURL: process.env.REACT_APP_API_URL,
-  tokenKey: 'authToken',
-  encryptionEnabled: true
-};
+import { validateForm } = from 'mern-utils';
+
+const errors = validateForm(userData, {
+  email: 'required|email',
+  password: 'required|min:8'
+});
 ```
+
+## Features
+
+- JWT authentication middleware
+- API client with interceptors
+- Form validation rules engine
+- Error handling utilities
+- Request logging and debugging tools
 
 ## License
 
