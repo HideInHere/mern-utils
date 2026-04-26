@@ -1,14 +1,15 @@
 # mern-utils
 
-A lightweight utility library for MERN stack applications. Provides common helpers for API communication, state management, validation, and data transformation.
+A lightweight utility library for MERN stack applications, providing commonly used helpers for API integration, state management, and data validation.
 
 ## Features
 
-- **API Client**: Pre-configured axios wrapper with automatic token handling
-- **Validators**: Email, URL, and schema validation utilities
-- **Middleware**: CORS and error handling helpers
-- **Hooks**: Custom React hooks for authentication, loading states, and data fetching
-- **Formatters**: Date, currency, and string formatting functions
+- RESTful API client with built-in error handling
+- Form validation utilities with customizable rules
+- JWT authentication helpers
+- Data transformation and formatting functions
+- Request/response interceptors
+- LocalStorage manager with encryption support
 
 ## Installation
 
@@ -19,33 +20,31 @@ npm install mern-utils
 ## Quick Start
 
 ```javascript
-// Using the API client
-import { apiClient } from 'mern-utils';
+import { apiClient, validateEmail, formatDate } from 'mern-utils';
 
-const fetchUsers = async () => {
-  const response = await apiClient.get('/api/users');
-  return response.data;
-};
+// Make authenticated API requests
+const { data } = await apiClient.get('/api/users', {
+  headers: { Authorization: `Bearer ${token}` }
+});
 
-// Using validators
-import { isValidEmail, validateSchema } from 'mern-utils';
+// Validate user input
+const isValid = validateEmail('user@example.com');
 
-if (isValidEmail(email)) {
-  console.log('Valid email');
-}
-
-// Using custom hooks
-import { useApi } from 'mern-utils';
-
-function UserList() {
-  const { data, loading, error } = useApi('/api/users');
-  return loading ? <p>Loading...</p> : <div>{data.map(u => u.name)}</div>;
-}
+// Format timestamps
+const formatted = formatDate(new Date(), 'MM/DD/YYYY');
 ```
 
-## Documentation
+## Configuration
 
-See [docs](./docs) for complete API reference.
+Create a `mern-utils.config.js` in your project root:
+
+```javascript
+module.exports = {
+  apiBaseURL: process.env.REACT_APP_API_URL,
+  tokenKey: 'authToken',
+  encryptionEnabled: true
+};
+```
 
 ## License
 
