@@ -1,6 +1,6 @@
 # mern-utils
 
-A collection of reusable utilities and helpers for MERN stack development, including API client wrappers, form validation, authentication helpers, and common middleware.
+A lightweight utility library for MERN stack development. Provides essential helpers for authentication, API calls, validation, and state management to accelerate development workflows.
 
 ## Installation
 
@@ -8,47 +8,40 @@ A collection of reusable utilities and helpers for MERN stack development, inclu
 npm install mern-utils
 ```
 
-## Setup
+## Quick Start
 
 ```javascript
-// Initialize in your Express app
-const { setupAuth, errorHandler } = require('mern-utils');
+import { validateEmail, asyncHandler, withAuth } from 'mern-utils';
 
-app.use(setupAuth(process.env.JWT_SECRET));
-app.use(errorHandler());
-```
+// Validate email
+if (validateEmail('user@example.com')) {
+  console.log('Valid email');
+}
 
-## Usage
-
-**API Client with Request/Response Interceptors:**
-```javascript
-import { createApiClient } from 'mern-utils';
-
-const api = createApiClient({
-  baseURL: 'http://localhost:5000/api',
-  token: localStorage.getItem('token')
+// Wrap async route handlers to catch errors
+const handler = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.params.id);
+  res.json(user);
 });
 
-const response = await api.get('/users');
-```
-
-**Form Validation:**
-```javascript
-import { validateForm } = from 'mern-utils';
-
-const errors = validateForm(userData, {
-  email: 'required|email',
-  password: 'required|min:8'
+// Protect routes with authentication middleware
+app.get('/profile', withAuth, (req, res) => {
+  res.json(req.user);
 });
 ```
 
 ## Features
 
-- JWT authentication middleware
-- API client with interceptors
-- Form validation rules engine
-- Error handling utilities
-- Request logging and debugging tools
+- Email, phone, and password validation utilities
+- Async error handling middleware
+- JWT authentication helpers
+- API response formatting
+- Environment configuration loader
+- Request rate limiting utilities
+
+## Documentation
+
+Full documentation available at [docs/](./docs/)
 
 ## License
 
