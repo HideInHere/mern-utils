@@ -9,7 +9,7 @@ const userSchema = new mongoose.Schema(
       unique: true,
       lowercase: true,
       trim: true,
-      match: /.+\@.+\..+/,
+      match: /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
     },
     password: {
       type: String,
@@ -17,44 +17,48 @@ const userSchema = new mongoose.Schema(
       minlength: 8,
       select: false,
     },
-    firstName: String,
-    lastName: String,
-    role: {
-      type: String,
-      enum: ['user', 'admin', 'moderator'],
-      default: 'user',
+    profile: {
+      firstName: String,
+      lastName: String,
+      avatar: String,
     },
     isActive: {
       type: Boolean,
       default: true,
     },
+    roles: {
+      type: [String],
+      enum: ['user', 'admin', 'moderator'],
+      default: ['user'],
+    },
     lastLogin: Date,
-    avatar: String,
-    deletedAt: Date,
+    emailVerified: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );
 
-userSchema.index({ email: 1, deletedAt: 1 });
-
 userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next();
-
   try {
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
     next();
-  } catch (err) {
-    next(err);
+  } catch (error) {
+    next(error);
   }
 });
 
-userSchema.methods.comparePassword = function (candidatePassword) {
+userSchema.methods.comparePassword = async function (candidatePassword) {
   return bcrypt.compare(candidatePassword, this.password);
 };
 
-userSchema.query.active = function () {
-  return this.where({ deletedAt: null, isActive: true });
+userSchema.methods.toJSON = function () {
+  const obj = this.toObject();
+  delete obj.password;
+  return obj;
 };
 
 module.exports = mongoose.model('User', userSchema);
